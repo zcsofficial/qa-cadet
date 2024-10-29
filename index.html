@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NCC Cadet Profile Management</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">NCC Cadet Profile Management</h1>
+
+        <div class="card">
+            <div class="card-header">Add Cadet Profile</div>
+            <div class="card-body">
+                <form id="cadetForm">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cadet_id">Cadet ID</label>
+                        <input type="text" class="form-control" id="cadet_id" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="rank">Rank</label>
+                        <input type="text" class="form-control" id="rank" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="year">Year</label>
+                        <input type="text" class="form-control" id="year" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" class="form-control" id="location" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="achievements">Achievements</label>
+                        <textarea class="form-control" id="achievements" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="profile_picture">Profile Picture</label>
+                        <input type="file" class="form-control-file" id="profile_picture" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Cadet</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Retrieve Cadet Profile</div>
+            <div class="card-body">
+                <form id="retrieveForm">
+                    <div class="form-group">
+                        <label for="retrieve_cadet_id">Cadet ID</label>
+                        <input type="text" class="form-control" id="retrieve_cadet_id" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Retrieve Cadet</button>
+                </form>
+                <div id="cadetProfile" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('cadetForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const formData = new FormData();
+            formData.append('name', document.getElementById('name').value);
+            formData.append('cadet_id', document.getElementById('cadet_id').value);
+            formData.append('rank', document.getElementById('rank').value);
+            formData.append('year', document.getElementById('year').value);
+            formData.append('location', document.getElementById('location').value);
+            formData.append('achievements', document.getElementById('achievements').value);
+            formData.append('profile_picture', document.getElementById('profile_picture').files[0]);
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/add_cadet', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                alert(result.message || result.error);
+                if (response.ok) {
+                    document.getElementById('cadetForm').reset();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        document.getElementById('retrieveForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const cadetId = document.getElementById('retrieve_cadet_id').value;
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/get_cadet/${cadetId}`);
+                const result = await response.json();
+                const cadetProfileDiv = document.getElementById('cadetProfile');
+
+                if (response.ok) {
+                    cadetProfileDiv.innerHTML = `
+                        <h4>Cadet Profile</h4>
+                        <p><strong>Name:</strong> ${result.name}</p>
+                        <p><strong>Cadet ID:</strong> ${result.cadet_id}</p>
+                        <p><strong>Rank:</strong> ${result.rank}</p>
+                        <p><strong>Year:</strong> ${result.year}</p>
+                        <p><strong>Location:</strong> ${result.location}</p>
+                        <p><strong>Achievements:</strong> ${result.achievements}</p>
+                        <img src="${result.profile_picture}" alt="${result.name}" style="width: 150px; height: auto;">
+                    `;
+                } else {
+                    cadetProfileDiv.innerHTML = `<p class="text-danger">${result.error}</p>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

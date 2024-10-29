@@ -2,14 +2,10 @@ from flask import Flask, request, jsonify
 from pymongo import MongoClient
 import cloudinary
 import cloudinary.uploader
-import logging
-from flask_cors import CORS  # Import CORS
+from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS
-
-# Configure logging
-logging.basicConfig(level=logging.DEBUG)
 
 # MongoDB Atlas connection
 mongo_uri = "mongodb+srv://contactzcsco:Z3r0c0575k1ll%4066202@zcsproduction.zld0i.mongodb.net/?retryWrites=true&w=majority&appName=ZCSProduction"
@@ -43,12 +39,8 @@ def add_cadet():
         achievements = data.get("achievements")
         image_file = request.files.get("profile_picture")
 
-        logging.debug("Received data: %s", data)
-        logging.debug("Received image file: %s", image_file)
-
         if image_file:
             image_url = upload_image_to_cloudinary(image_file)
-            logging.debug("Image uploaded to Cloudinary: %s", image_url)
         else:
             return jsonify({"error": "Profile picture is required"}), 400
 
@@ -65,7 +57,6 @@ def add_cadet():
         collection.insert_one(cadet_profile)
         return jsonify({"message": "Cadet profile added successfully!"}), 201
     except Exception as e:
-        logging.error("Error adding cadet: %s", e)
         return jsonify({"error": str(e)}), 500
 
 # Route to retrieve cadet profile by cadet_id
@@ -79,4 +70,5 @@ def get_cadet(cadet_id):
         return jsonify({"error": "Cadet not found"}), 404
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    print("Server is running and MongoDB connection is OK")
+    app.run(debug=False)

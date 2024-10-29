@@ -1,0 +1,5 @@
+Flask==2.2.5
+Flask-Cors==3.1.13
+pymongo==4.5.0
+cloudinary==1.29.0
+requests==2.31.0

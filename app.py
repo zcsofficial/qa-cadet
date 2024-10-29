@@ -5,7 +5,7 @@ import cloudinary.uploader
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS
+CORS(app)
 
 # MongoDB Atlas connection
 mongo_uri = "mongodb+srv://contactzcsco:Z3r0c0575k1ll%4066202@zcsproduction.zld0i.mongodb.net/?retryWrites=true&w=majority&appName=ZCSProduction"
@@ -17,14 +17,14 @@ collection = db["cadets"]
 cloudinary.config( 
     cloud_name = "dxevrrj4j", 
     api_key = "853367529692421", 
-    api_secret = "qmkkPh2MEoQCSJ2OLfHeQbaYVFk",  # Replace with your actual API secret
+    api_secret = "qmkkPh2MEoQCSJ2OLfHeQbaYVFk",  
     secure=True
 )
 
 # Helper function to upload image to Cloudinary
 def upload_image_to_cloudinary(image_file):
     upload_result = cloudinary.uploader.upload(image_file)
-    return upload_result["secure_url"]  # Returns the secure URL of the uploaded image
+    return upload_result["secure_url"]
 
 # Route to add a new cadet profile
 @app.route('/add_cadet', methods=['POST'])
@@ -64,11 +64,11 @@ def add_cadet():
 def get_cadet(cadet_id):
     cadet_profile = collection.find_one({"cadet_id": cadet_id})
     if cadet_profile:
-        cadet_profile["_id"] = str(cadet_profile["_id"])  # Convert ObjectId to string
+        cadet_profile["_id"] = str(cadet_profile["_id"])
         return jsonify(cadet_profile), 200
     else:
         return jsonify({"error": "Cadet not found"}), 404
 
 if __name__ == '__main__':
     print("Server is running and MongoDB connection is OK")
-    app.run(debug=False)
+    app.run(host="0.0.0.0", port=5000, debug=False)
